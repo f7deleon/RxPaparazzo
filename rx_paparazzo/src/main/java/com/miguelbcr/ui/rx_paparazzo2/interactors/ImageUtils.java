@@ -17,11 +17,15 @@
 package com.miguelbcr.ui.rx_paparazzo2.interactors;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -96,10 +100,28 @@ public final class ImageUtils {
   }
 
   public File getPrivateFile(String directory, String filename) {
-    File dir = new File(targetUi.getContext().getFilesDir(), directory);
-    dir.mkdirs();
+    ContentValues values = new ContentValues();
+    values.put(MediaStore.Images.Media.TITLE, filename);
+    values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+    Uri mCameraPicUri = targetUi.getContext().
+            getContentResolver()
+            .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
-    return new File(dir, filename);
+    return new File(mCameraPicUri.getPath());
+  }
+
+
+  private String getFileName(ContentResolver contentResolver, Uri fileUri) {
+    String name = "";
+    Cursor returnCursor = contentResolver.query(fileUri, null, null, null, null);
+    if (returnCursor != null) {
+      int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+      returnCursor.moveToFirst();
+      name = returnCursor.getString(nameIndex);
+      returnCursor.close();
+    }
+
+    return name;
   }
 
   private String getApplicationName(Context context) {

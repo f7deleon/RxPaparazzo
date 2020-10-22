@@ -16,10 +16,14 @@
 
 package com.miguelbcr.ui.rx_paparazzo2.interactors;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+
 import androidx.core.content.FileProvider;
 
 import com.miguelbcr.ui.rx_paparazzo2.entities.Config;
@@ -96,5 +100,4 @@ public final class TakePhoto extends UseCase<FileData> {
 
     return PermissionUtil.requestReadWritePermission(targetUi, intent, uri);
   }
-
 }
